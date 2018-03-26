@@ -18,4 +18,5 @@ fi
 
 # set PATH so it includes user's private bin directories
 PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-export JAVA_HOME="/usr/lib/jvm/java-8-oracle/jre/"
+
+export JAVA_HOME="/usr/lib/jvm/default-java/jre/"
