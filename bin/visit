@@ -35,7 +35,7 @@ if [ -n "$pem" ]; then
   cmd+=" -i $pem"
 fi 
 
-hosts=$(get-hosts ${other_args[*]} $*)
+hosts=$(get-hosts ${other_args[@]} $@)
 if [ $? -gt 0 ] || [ ${#hosts[*]} -lt 1 ] || [[ -z $hosts ]]; then
   echo "Not Found"
   if [[ -n $hosts ]]; then
