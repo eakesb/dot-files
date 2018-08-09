@@ -6,23 +6,34 @@ function join_by { local IFS="$1"; shift; echo "$*"; }
 
 user=$USER
 
-other_args=()
-while [ $# -gt 2 ]; do
-  case "$1" in
-    -l )        list=1 
-                ;;
-    -i )        shift
-                pem=$1
-                ;; 
-    -u )        shift
-                user=$1
-                ;;
-    *  )        other_args+=($1)
-  esac
-  shift
+if ((!$#)) ; then
+  read args
+  set -- ${args[*]}
+fi
+
+while [ $# -gt 0 ]; do
+ case "$1" in
+   -n )        shift
+               session_name=$1 
+               ;;
+   -i )        shift
+               pem=$1
+               ;; 
+   -u )        shift
+               user=$1
+               ;;
+    * )        break 
+               ;;
+ esac
+ shift
 done
 
-session_name=$(join_by _ $@)
+hosts=$@
+
+if [ -z $session_name ]; then
+  echo "Provide name for tmux session:"
+  read session_name
+fi
 
 if tmux has -t "$session_name" > /dev/null 2>&1; then
   echo "Session $session_name exists. Attaching"
@@ -35,28 +46,23 @@ if [ -n "$pem" ]; then
   cmd+=" -i $pem"
 fi 
 
-hosts=$(get-hosts ${other_args[@]} $@)
-if [ $? -gt 0 ] || [ ${#hosts[*]} -lt 1 ] || [[ -z $hosts ]]; then
-  echo "Not Found"
-  if [[ -n $hosts ]]; then
-    echo $hosts
-  fi
-  exit 1
-fi  
+while [ ${#hosts[*]} -lt 1 ] || [[ -z $hosts ]]; do
+  echo "No hosts given. Please input ip to connect to:"
+  read hosts
+done 
 
+echo "Connecting to: "
 for host in $hosts; do 
   echo $host
 done
 
-if [ "$list" = "1" ]; then 
-  exit 
-fi
-
+echo "one"
 tmux new -d -s "$session_name"
 while ! tmux has -t "$session_name" > /dev/null 2>&1; do
   sleep 0.1
 done
 
+echo "two"
 for host in $hosts; do
   target="$user@$host"
 
@@ -64,7 +70,9 @@ for host in $hosts; do
   tmux select-layout -t "$session_name":1 tiled
 done
 
+echo "three"
 tmux kill-pane -t "$session_name":1.0
 tmux select-layout -t "$session_name":1 tiled
 
+echo "four"
 tmux attach -t "$session_name"
