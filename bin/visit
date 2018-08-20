@@ -56,13 +56,11 @@ for host in $hosts; do
   echo $host
 done
 
-echo "one"
 tmux new -d -s "$session_name"
 while ! tmux has -t "$session_name" > /dev/null 2>&1; do
   sleep 0.1
 done
 
-echo "two"
 for host in $hosts; do
   target="$user@$host"
 
@@ -70,9 +68,7 @@ for host in $hosts; do
   tmux select-layout -t "$session_name":1 tiled
 done
 
-echo "three"
 tmux kill-pane -t "$session_name":1.0
 tmux select-layout -t "$session_name":1 tiled
 
-echo "four"
 tmux attach -t "$session_name"

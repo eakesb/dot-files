@@ -1,0 +1,54 @@
+#!/bin/bash
+
+##### MAIN
+
+tag="Application"
+SERIALIZE=false
+while [ $# -gt 2 ]; do
+  case "$1" in
+    -s | --service )          tag="Service"
+                              ;;
+    -t | --tag )              shift
+                              tag="$1"
+                              ;;
+    -o | --serialized )       SERIALIZE=true
+                              ;;
+    * )                       echo "Unknown command line argument: $1"
+                              exit 1
+  esac
+  shift
+done
+
+case "$1" in 
+  d | dev  | development )    env="development"
+                              ;;
+  s | stag | staging )        env="staging"
+                              ;;
+  p | prod | production )     env="production"
+                              ;;
+  * )                         echo 'Unknown environment. Choices are (development|staging|production)'
+                              exit 1
+esac
+shift
+
+if [ -z "$1" ]; then
+  exit 1
+fi
+
+service="$1"
+
+ips=$(aws ec2 describe-instances --filters "Name=tag:$tag,Values=$service" "Name=tag:Environment,Values=$env" | jq ".Reservations[] | .Instances[] | .NetworkInterfaces[] | .PrivateIpAddress")
+
+hosts=()
+
+for ip in $ips; do
+  host="${ip%\"}"
+  host="${host#\"}"
+  hosts+=("$host")
+done
+
+if $SERIALIZE ; then
+  printf '%s %s_%s %s' "-n" "$env" "$service" "${hosts[*]}"
+else
+  printf '%s\n' "${hosts[@]}"
+fi
