@@ -17,6 +17,12 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 # set PATH so it includes user's private bin directories
-PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:/usr/local/go/bin"
 
 export JAVA_HOME="/usr/lib/jvm/default-java/jre"
+
+export GOPATH=$HOME/Development/go
+export GOBIN=$GOPATH/bin
+
