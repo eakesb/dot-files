@@ -3,15 +3,12 @@
 ##### MAIN
 
 tag="Application"
-SERIALIZE=false
 while [ $# -gt 2 ]; do
   case "$1" in
     -s | --service )          tag="Service"
                               ;;
     -t | --tag )              shift
                               tag="$1"
-                              ;;
-    -o | --serialized )       SERIALIZE=true
                               ;;
     * )                       echo "Unknown command line argument: $1"
                               exit 1
@@ -47,8 +44,4 @@ for ip in $ips; do
   hosts+=("$host")
 done
 
-if $SERIALIZE ; then
-  printf '%s %s_%s %s' "-n" "$env" "$service" "${hosts[*]}"
-else
-  printf '%s\n' "${hosts[@]}"
-fi
+printf '%s\n' "${hosts[@]}"

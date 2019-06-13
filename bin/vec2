@@ -1,0 +1,36 @@
+#!/bin/bash
+
+##### MAIN
+
+if ((!$#)) ; then
+  read args
+  set -- ${args[*]}
+fi
+
+visit_options=()
+ec2_ls_options=()
+
+while [ $# -gt 2 ]; do
+ case "$1" in
+   -i )                        visit_options+=("$1" "$2") 
+                               shift
+                               ;; 
+   -u )                        visit_options+=("$1" "$2") 
+                               shift
+                               ;;
+   -s | --service )            ec2_ls_options+=("$1")
+                               ;;
+   -t | --tag )                ec2_ls_options+=("$1" "$2")
+                               shift
+                               ;;
+   * )                         break 
+                               ;;
+ esac
+ shift
+done
+
+visit_options+=("-n" "$1_$2")
+
+hosts=$(ec2-ls ${ec2_ls_options[@]} $*)
+
+visit ${visit_options[@]} $hosts
