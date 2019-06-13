@@ -123,3 +123,31 @@ fi
 alias config='/usr/bin/git --git-dir=/home/blaine/.cfg/ --work-tree=/home/blaine'
 
 source ~/.git-prompt.sh
+
+# setup gpg-agent
+if [ -f $HOME/.gpg-agent-info ]; then
+  . $HOME/.gpg-agent-info
+  export GPG_AGENT_INFO
+fi
+
+if [ ! -f $HOME/.gpg-agent.conf ]; then
+  cat <<EOM >$HOME/.gpg-agent.conf
+default-cache-ttl 604800
+max-cache-ttl 604800
+default-cache-ttl-ssh 604800
+max-cache-ttl-ssh 604800
+EOM
+fi
+
+if [ -n "${GPG_AGENT_INFO}" ]; then
+  nc  -w 0 -U "${GPG_AGENT_INFO%%:*}" >/dev/null </dev/null
+  if [ ! -S "${GPG_AGENT_INFO%%:*}" -o $? != 0 ]; then
+    # set passphrase cache so I only have to type my passphrase once a day
+    eval $(gpg-agent --options $HOME/.gpg-agent.conf --daemon --log-file $HOME/tmp/gpg-agent.log --verbose)
+  fi
+fi
+
+export GPG_TTY=$(tty)
+
+# Added for psql window resizing
+shopt -s checkwinsize
