@@ -21,7 +21,7 @@ export PATH="$PATH:$HOME/bin"
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:/usr/local/go/bin"
 
-export JAVA_HOME="/usr/lib/jvm/default-java/jre"
+export JAVA_HOME="/usr/lib/jvm/java-8-oracle/"
 
 export GOPATH=$HOME/Development/go
 export GOBIN=$GOPATH/bin
