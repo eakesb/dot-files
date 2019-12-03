@@ -1,0 +1,3 @@
+#!/bin/bash
+
+aws ec2 describe-instances --instance-ids $1 | jq '.Reservations[0].Instances[0].NetworkInterfaces[0].PrivateIpAddress'

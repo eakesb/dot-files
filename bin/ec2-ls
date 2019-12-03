@@ -36,12 +36,8 @@ service="$1"
 
 ips=$(aws ec2 describe-instances --filters "Name=tag:$tag,Values=$service" "Name=tag:Environment,Values=$env" | jq ".Reservations[] | .Instances[] | .NetworkInterfaces[] | .PrivateIpAddress")
 
-hosts=()
-
 for ip in $ips; do
   host="${ip%\"}"
   host="${host#\"}"
-  hosts+=("$host")
+  echo $host
 done
-
-printf '%s\n' "${hosts[@]}"

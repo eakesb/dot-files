@@ -151,3 +151,6 @@ export GPG_TTY=$(tty)
 
 # Added for psql window resizing
 shopt -s checkwinsize
+
+# Set EDITOR
+export EDITOR="/usr/bin/vim"
